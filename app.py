@@ -3,6 +3,7 @@ from ethblogapp.models import User
 import datetime
 import re
 from lib.scraping import get_blog_title_from_url
+from ethblogapp.database import db_session
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -95,6 +96,7 @@ def handle_message(event):
             TextSendMessage(text='関係ないことをLINEしてる暇があるんですか？そんなんだからブログが続かないんですよ。'))
 
 
+#アドレスを作成したJS側が作成したUserのaddressをidと共に送ってくる
 @app.route("/<line_id>/<address>", methods=["POST"])
 def notify_deposit(line_id=None, address=None):
     if address is None:

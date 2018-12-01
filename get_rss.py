@@ -1,9 +1,4 @@
 from ethblogapp.models import User
-import urllib.request
-import urllib.error
-from bs4 import BeautifulSoup
-import feedparser
-import re
 from datetime import datetime
 from ethblogapp.database import db_session
 from lib.scraping import get_article_titles_from_blog_url
