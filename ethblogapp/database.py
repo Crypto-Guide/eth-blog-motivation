@@ -14,5 +14,4 @@ Base.query = db_session.query_property()
 
 
 def init_db():
-    import ethblogapp.models
     Base.metadata.create_all(bind=engine)
