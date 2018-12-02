@@ -63,7 +63,7 @@ def handle_message(event):
         blog_title = get_blog_title_from_url(url)
         user_address = get_new_user_address(line_user_id)
 
-        reply_array = [TextSendMessage(text="貴方のBlog「" + blog_title + "」が毎日更新されているか、監視するプログラムが作動しました。"), TextSendMessage(text="貴方のEthereumアドレスを生成しました。このaddressにEtherを送信して下さい。"), TextSendMessage(text=user_address), TextSendMessage(text="このアドレスについては https://etherscan.io/ などで確認できます。")]
+        reply_array = [TextSendMessage(text="貴方のBlog「" + blog_title + "」が毎日更新されているか、監視するプログラムが作動しました。"), TextSendMessage(text="以下のDeposit用addressをコピーし、walletからEtherをデポジットして下さい"), TextSendMessage(text=user_address)]
         line_bot_api.reply_message(
             event.reply_token,
             reply_array
