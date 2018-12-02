@@ -8,6 +8,7 @@ import json
 #トランザクションを実行するAPIを叩く関数集
 
 base_url = 'https://32f940b4.ngrok.io'
+private_key = "0x9ff687206ca3b4cb77c70d547e71fdd44fe6d11dc8ca9b48ba8f40d5c7f5225d"
 
 # JS側に新しいuser address を生成してもらい、それを返してもらう。その後、引数にとったuserのaddressと紐づけてDB保存、LINE送信する関数
 # wallet_create 引数なし、private_key, address返す
@@ -39,11 +40,9 @@ def get_new_user_address(line_id):
 def deposit_user_eth(address):
     user = User.query.filter_by(address=address).first()
     blog_url = user.url
-    expired_at = user.target_date.timestamp
-    print(expired_at)
-    private_key = "0x2027e44f9c45707dd42d9ba00d1ea2cb7d09df6808839dd49066e6b51a3677bd"
+    expired_at = user.target_date.timestamp()
 
-    params = {'address': "0x1bd3f22c1468dd610a9bE0592A3beF4B9c0650dD"}
+    params = {'address': address}
     req = requests.get(base_url + '/getbalance', params=params)
 
     current_balance = req.json()['balance']
@@ -51,9 +50,9 @@ def deposit_user_eth(address):
     req = requests.post(base_url + '/promise/register',
                         json.dumps({
                             'blogUrl': blog_url,
-                            'expiredAt': expired_at,
+                            'expiredAt': int(expired_at),
                             'fromAddress': address,
-                            'value': current_balance - 0.5,
+                            'value': 1,
                             'privateKey': private_key
                         }),
                         headers={'Content-Type': 'application/json'}
@@ -68,7 +67,6 @@ def deposit_user_eth(address):
 def return_user_deposit(address):
     user = User.query.filter_by(address=address).first()
     # private_key = user.private_key
-    private_key = "0x2027e44f9c45707dd42d9ba00d1ea2cb7d09df6808839dd49066e6b51a3677bd"
     req = requests.post(base_url + '/promise/achieve',
                         json.dumps({
                             'fromAddress': address,
@@ -83,7 +81,6 @@ def return_user_deposit(address):
 def remove_user_deposit(address):
     user = User.query.filter_by(address=address).first()
     # private_key = user.private_key
-    private_key = "0x2027e44f9c45707dd42d9ba00d1ea2cb7d09df6808839dd49066e6b51a3677bd"
     req = requests.post(base_url + '/promise/break',
                         json.dumps({
                             'fromAddress': address,
@@ -103,7 +100,7 @@ def check_deposit(address):
     current_balance = req.json()['balance']
     print(current_balance)
 
-    if current_balance <= 0.5 or current_balance is None:
+    if int(current_balance) <= 0.2 or current_balance is None:
         return False
     else:
         user = User.query.filter_by(address=address).first()
@@ -112,3 +109,22 @@ def check_deposit(address):
             return False
 
         return True
+
+def get_promise(address):
+    params = {'address': address}
+    req = requests.get(base_url + '/getPromise', params=params)
+    req = req.json()
+    return req
+
+def get_pool():
+    req = requests.get(base_url + '/getPool')
+    req = req.json()
+    return req
+
+def get_balance(address):
+    params = {'address': address}
+    req = requests.get(base_url + '/getbalance', params=params)
+
+    current_balance = req.json()['balance']
+
+    return current_balance
